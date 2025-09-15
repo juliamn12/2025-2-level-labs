@@ -20,6 +20,14 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     Returns:
         bool: True if valid, False otherwise
     """
+    if not isinstance(user_input, list):
+        return False
+    if not can_be_empty and len(user_input) == 0:
+        return False
+    for item in user_input:
+        if not isinstance(item, elements_type):
+            return False
+    return True
 
 
 def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
@@ -35,6 +43,14 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     Returns:
         bool: True if valid, False otherwise
     """
+    if not isinstance(user_input, dict):
+        return False
+    if not can_be_empty and len(user_input) == 0:
+        return False
+    for key, value in user_input.items():
+        if not isinstance(key, key_type) or not isinstance(value, value_type):
+            return False
+    return True
 
 
 def check_positive_int(user_input: Any) -> bool:
@@ -47,6 +63,13 @@ def check_positive_int(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
+    if not isinstance(user_input, int):
+        return False
+    if isinstance(user_input, bool):
+        return False
+    if user_input <= 0:
+        return False
+    return True
 
 
 def check_float(user_input: Any) -> bool:
@@ -59,6 +82,11 @@ def check_float(user_input: Any) -> bool:
     Returns:
         bool: True if valid, False otherwise
     """
+    if not isinstance(user_input, float):
+        return False
+    if isinstance(user_input, bool):
+        return False
+    return True
 
 
 def clean_and_tokenize(text: str) -> list[str] | None:
@@ -72,6 +100,8 @@ def clean_and_tokenize(text: str) -> list[str] | None:
         list[str] | None: A list of lowercase tokens without punctuation.
         In case of corrupt input arguments, None is returned.
     """
+    text = text.lower()
+    cleaned = []
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str] | None:
