@@ -12,9 +12,7 @@ from main import (
     get_top_n, 
     calculate_tf, 
     calculate_tfidf, 
-    calculate_expected_frequency, 
-    calculate_chi_values
-    )
+)
 
 def main() -> None:
     """
@@ -32,7 +30,10 @@ def main() -> None:
     tokens = clean_and_tokenize(target_text)
     filteted_tokens = remove_stop_words(tokens, stop_words)
     frequencies = calculate_frequencies(filteted_tokens)
-    result = get_top_n(frequencies, 10)
+    tf = calculate_tf(frequencies)
+    tfidf = calculate_tfidf(tf, idf)
+    top_tfidf = get_top_n(tfidf, 10)
+    result = top_tfidf
     print(result)
     assert result, "Keywords are not extracted"
 
