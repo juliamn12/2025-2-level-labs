@@ -14,6 +14,7 @@ from lab_1_keywords_tfidf.main import (
     remove_stop_words,
 )
 
+
 def main() -> None:
     """
     Launches an implementation.
@@ -26,31 +27,24 @@ def main() -> None:
         idf = load(file)
     with open("assets/corpus_frequencies.json", "r", encoding="utf-8") as file:
         corpus_freqs = load(file)
-    
     tokens = clean_and_tokenize(target_text)
     if tokens is None:
         return
-    
     filtered_tokens = remove_stop_words(tokens, stop_words)
     if filtered_tokens is None:
         return
-    
     frequencies = calculate_frequencies(filtered_tokens)
     if frequencies is None:
         return
-    
     tf = calculate_tf(frequencies)
     if tf is None:
         return
-    
     tfidf = calculate_tfidf(tf, idf)
     if tfidf is None:
         return
-    
     result = get_top_n(tfidf, 10)
     if result is None:
         return
-    
     print(result)
     assert result, "Keywords are not extracted"
 
