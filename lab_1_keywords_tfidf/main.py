@@ -103,7 +103,7 @@ def clean_and_tokenize(text: str) -> list[str] | None:
     text = text.lower()
     cleaned = []
     for symbol in text:
-        if symbol.isalnum() or symbol == " ":
+        if symbol.isalnum() or symbol.isspace():
             cleaned.append(symbol)
     cleaned = "".join(cleaned)
     tokens = cleaned.split()
@@ -152,7 +152,6 @@ def calculate_frequencies(tokens: list[str]) -> dict[str, int] | None:
         else:
             frequencies[token] = 1
     return frequencies
-    
 
 
 def get_top_n(frequencies: dict[str, int | float], top: int) -> list[str] | None:
@@ -200,7 +199,6 @@ def calculate_tf(frequencies: dict[str, int]) -> dict[str, float] | None:
     for word, count in frequencies.items():
         tf_dict[word] = count / total_words
     return tf_dict
-
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[str, float] | None:
