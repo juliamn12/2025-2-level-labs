@@ -218,8 +218,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> dict[
         if word in idf:
             idf_value = idf[word]
         else:
-            doc_freq = 0
-            idf_value = math.log(total_texts / (doc_freq + 1))
+            idf_value = math.log(total_texts / 1)
         tfidf_dict[word] = tf_value * idf_value
     return tfidf_dict
 
