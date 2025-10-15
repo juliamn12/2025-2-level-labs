@@ -10,11 +10,7 @@ from lab_1_keywords_tfidf.main import (
 from lab_2_spellcheck.main import (
     build_vocabulary,
     find_out_of_vocab_words,
-    calculate_jaccard_distance,
-    calculate_distance,
     find_correct_word,
-    generate_candidates,
-    propose_candidates
 )
 
 def main() -> None:
@@ -36,10 +32,18 @@ def main() -> None:
     tokens = clean_and_tokenize(text)
     tokens_without_stopwords = remove_stop_words(tokens, stop_words)
     vocabulary = build_vocabulary(tokens_without_stopwords)
-    print(vocabulary)
-    out_of_vocab = find_out_of_vocab_words(tokens_without_stopwords, vocabulary)
-    print(out_of_vocab)
-    result = None
+    corrections = []
+    for s in sentences:
+        words = clean_and_tokenize(s)
+        out_of_vocab = find_out_of_vocab_words(words, vocabulary)
+        for word in out_of_vocab:
+            use_jaccard = find_correct_word(word, vocabulary, "jaccard")
+            use_frequency_based = find_correct_word(word, vocabulary, "frequency-based")
+            corrections.append({"word": word, "jaccard": use_jaccard, "frequency-based": use_frequency_based})
+            print(f"Word: {word}")
+            print(f"Jaccard: {use_jaccard}")
+            print(f"Frequency-based: {use_frequency_based}")
+    result = corrections
     assert result, "Result is None"
 
 
