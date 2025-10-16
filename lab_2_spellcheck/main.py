@@ -234,8 +234,10 @@ def fill_levenshtein_matrix(token: str, candidate: str) -> list[list[int]] | Non
     matrix = initialize_levenshtein_matrix(len(token), len(candidate))
     if not matrix:
         return None
-    for i in range (1, len(token)+1):
-        for j in range(1, len(candidate)+1):
+    for i in range (len(token)+1):
+        for j in range(len(candidate)+1):
+            if i == 0 or j == 0:
+                continue
             if token[i-1] == candidate[j-1]:
                 cost = 0
             else:
@@ -259,6 +261,15 @@ def calculate_levenshtein_distance(token: str, candidate: str) -> int | None:
         int | None: Minimum number of single-character edits (insertions, deletions,
              substitutions) required to transform token into candidate.
     """
+    if not isinstance(token, str):
+        return None
+    if not isinstance(candidate, str):
+        return None
+    matrix = fill_levenshtein_matrix(token, candidate)
+    if not matrix:
+        return None
+    lev_distance = matrix[-1][-1]
+    return lev_distance
 
 
 def delete_letter(word: str) -> list[str]:
@@ -348,7 +359,7 @@ def swap_adjacent(word: str) -> list[str]:
 
     In case of corrupt input arguments, empty list is returned.
     """
-    if not isinstance(word, str) or len(word)<2:
+    if not isinstance(word, str) or len(word) < 2:
         return []
     candidates = []
     for i in range(len(word)-1):
@@ -377,7 +388,6 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
         return None
     candidates = delete_letter(word) + add_letter(word, alphabet) + replace_letter(word, alphabet) + swap_adjacent(word)
     candidates_set = set(candidates)
-    candidates_set.discard("")
     return sorted(list(candidates_set))
 
 
@@ -443,12 +453,12 @@ def calculate_frequency_distance(
         return None
     candidates = propose_candidates(word, alphabet)
     distance_freq = {}
-    for word_fr in frequencies:
-        if candidates is not None and word_fr in candidates:
-            freq = frequencies[word_fr]
-            distance_freq[word_fr] = 1.0 - freq
+    for dict_word in frequencies:
+        if candidates is not None and dict_word in candidates:
+            freq = frequencies[dict_word]
+            distance_freq[dict_word] = 1.0 - freq
         else:
-            distance_freq[word_fr] = 1.0
+            distance_freq[dict_word] = 1.0
     return distance_freq
 
 

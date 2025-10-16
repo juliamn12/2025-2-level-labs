@@ -33,8 +33,8 @@ def main() -> None:
     tokens_without_stopwords = remove_stop_words(tokens, stop_words)
     vocabulary = build_vocabulary(tokens_without_stopwords)
     corrections = []
-    for s in sentences:
-        words = clean_and_tokenize(s)
+    for sentance in sentences:
+        words = clean_and_tokenize(sentance)
         out_of_vocab = find_out_of_vocab_words(words, vocabulary)
         for word in out_of_vocab:
             use_jaccard = find_correct_word(word, vocabulary, "jaccard")
