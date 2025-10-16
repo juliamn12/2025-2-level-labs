@@ -30,15 +30,25 @@ def main() -> None:
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
     tokens = clean_and_tokenize(text)
+    if tokens is None:
+        return
     tokens_without_stopwords = remove_stop_words(tokens, stop_words)
-    vocabulary = build_vocabulary(tokens_without_stopwords)
+    if tokens_without_stopwords is None:
+        return
+    vocab = build_vocabulary(tokens_without_stopwords)
+    if vocab is None:
+        return
     corrections = []
-    for sentance in sentences:
-        words = clean_and_tokenize(sentance)
-        out_of_vocab = find_out_of_vocab_words(words, vocabulary)
+    for sentence in sentences:
+        words = clean_and_tokenize(sentence)
+        if words is None:
+            continue
+        out_of_vocab = find_out_of_vocab_words(words, vocab)
+        if out_of_vocab is None:
+            continue
         for word in out_of_vocab:
-            use_jaccard = find_correct_word(word, vocabulary, "jaccard")
-            use_frequency_based = find_correct_word(word, vocabulary, "frequency-based")
+            use_jaccard = find_correct_word(word, vocab, "jaccard")
+            use_frequency_based = find_correct_word(word, vocab, "frequency-based")
             corrections.append({
                 "word": word, 
                 "jaccard": use_jaccard, 

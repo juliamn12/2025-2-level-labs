@@ -184,7 +184,7 @@ def find_correct_word(
         differences.append(diff)
     min_difference = min(differences)
     good_candidates = [
-        word for word in candidates 
+        word for word in candidates
         if abs(len(word)-length_wrong_word) == min_difference
     ]
     if not good_candidates:
@@ -396,9 +396,9 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
     if not check_list(alphabet, str, True):
         return None
     candidates = (
-        delete_letter(word) + 
-        add_letter(word, alphabet) + 
-        replace_letter(word, alphabet) + 
+        delete_letter(word) +
+        add_letter(word, alphabet) +
+        replace_letter(word, alphabet) +
         swap_adjacent(word)
     )
     candidates_set = set(candidates)
