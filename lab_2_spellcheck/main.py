@@ -27,7 +27,7 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
         total_tokens += 1
     count_frequencies = {}
     for token in tokens:
-            count_frequencies[token] = count_frequencies.get(token, 0) + 1
+        count_frequencies[token] = count_frequencies.get(token, 0) + 1
     relative_frequencies = {}
     for token in tokens:
         relative_frequencies[token] = relative_frequencies.get(token, 0) + 1 / total_tokens
@@ -129,6 +129,12 @@ def calculate_distance(
                 return None
             for word in vocabulary:
                 distance_score[word] = freq_distance.get(word, 1.0)
+    elif method == "levenshtein":
+        for word in vocabulary:
+            levenshtein_distance = calculate_levenshtein_distance(first_token, word)
+            if levenshtein_distance is None:
+                return None
+            distance_score[word] = float(levenshtein_distance)
     else:
         for word in vocabulary:
             distance_score[word] = 0.0
@@ -177,7 +183,10 @@ def find_correct_word(
         diff = abs(len(word) - length_wrong_word)
         differences.append(diff)
     min_difference = min(differences)
-    good_candidates = [word for word in candidates if abs(len(word)-length_wrong_word) == min_difference]
+    good_candidates = [
+        word for word in candidates 
+        if abs(len(word)-length_wrong_word) == min_difference
+    ]
     if not good_candidates:
         return None
     best_candidate = min(good_candidates)
@@ -341,8 +350,8 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     for i in range(len(word)):
         for letter in alphabet:
             if letter != word[i]:
-               new = word[:i] + letter + word[i+1:]
-               candidates.append(new)
+                new = word[:i] + letter + word[i+1:]
+                candidates.append(new)
     return sorted(candidates)
 
 
@@ -386,7 +395,12 @@ def generate_candidates(word: str, alphabet: list[str]) -> list[str] | None:
         return None
     if not check_list(alphabet, str, True):
         return None
-    candidates = delete_letter(word) + add_letter(word, alphabet) + replace_letter(word, alphabet) + swap_adjacent(word)
+    candidates = (
+        delete_letter(word) + 
+        add_letter(word, alphabet) + 
+        replace_letter(word, alphabet) + 
+        swap_adjacent(word)
+    )
     candidates_set = set(candidates)
     return sorted(list(candidates_set))
 

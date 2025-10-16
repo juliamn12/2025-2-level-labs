@@ -39,7 +39,11 @@ def main() -> None:
         for word in out_of_vocab:
             use_jaccard = find_correct_word(word, vocabulary, "jaccard")
             use_frequency_based = find_correct_word(word, vocabulary, "frequency-based")
-            corrections.append({"word": word, "jaccard": use_jaccard, "frequency-based": use_frequency_based})
+            corrections.append({
+                "word": word, 
+                "jaccard": use_jaccard, 
+                "frequency-based": use_frequency_based
+            })
             print(f"Word: {word}")
             print(f"Jaccard: {use_jaccard}")
             print(f"Frequency-based: {use_frequency_based}")
