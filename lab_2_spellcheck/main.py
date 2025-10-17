@@ -207,15 +207,12 @@ def initialize_levenshtein_matrix(
     if token_length < 0 or candidate_length < 0:
         return None
     lev_matrix = []
-    n = token_length + 1
-    m = candidate_length + 1
-    for i in range(n):
-        line = [0] * (m)
+    for i in range(token_length + 1):
+        if i == 0:
+            line = list(range(candidate_length + 1))
+        else:
+            line = [i] + [0] * (candidate_length)
         lev_matrix.append(line)
-    for i in range(m):
-        lev_matrix[0][i] = i
-    for i in range(n):
-        lev_matrix[i][0] = i
     return lev_matrix
 
 
@@ -365,8 +362,8 @@ def swap_adjacent(word: str) -> list[str]:
     if not isinstance(word, str) or len(word) < 2:
         return []
     candidates = []
-    for i in range(len(word)-1):
-        new = word[:i] + word[i+1] + word[i] + word[i+2:]
+    for i, el in enumerate(word[:-1]):
+        new = word[:i] + word[i+1] + el + word[i+2:]
         candidates.append(new)
     return sorted(candidates)
 
