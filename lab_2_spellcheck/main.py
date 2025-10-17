@@ -4,6 +4,7 @@ Lab 2.
 
 # pylint:disable=unused-argument
 from typing import Literal
+
 from lab_1_keywords_tfidf.main import check_dict, check_list
 
 
@@ -104,13 +105,10 @@ def calculate_distance(
 
     In case of corrupt input arguments or unsupported method, None is returned.
     """
-    if not isinstance(first_token, str):
-        return None
-    if not check_dict(vocabulary, str, float, False):
-        return None
-    if alphabet is not None and not check_list(alphabet, str, True):
-        return None
-    if method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]:
+    if (not isinstance(first_token, str) or
+        not check_dict(vocabulary, str, float, False) or
+        (alphabet is not None and not check_list(alphabet, str, True)) or
+        method not in ["jaccard", "frequency-based", "levenshtein", "jaro-winkler"]):
         return None
     distance_score = {}
     if method == "jaccard":
@@ -119,21 +117,22 @@ def calculate_distance(
             if jaccard_distance is None:
                 return None
             distance_score[word] = jaccard_distance
-    if method == "frequency-based":
+    elif method == "frequency-based":
         if alphabet is None:
             return {word: 1.0 for word in vocabulary}
         freq_distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
         if freq_distance is None:
             return None
-        return {word: freq_distance.get(word, 1.0)for word in vocabulary}
-    if method == "levenshtein":
+        distance_score = {word: freq_distance.get(word, 1.0) for word in vocabulary}
+    elif method == "levenshtein":
         for word in vocabulary:
             levenshtein_distance = calculate_levenshtein_distance(first_token, word)
             if levenshtein_distance is None:
                 return None
             distance_score[word] = float(levenshtein_distance)
-        return distance_score
-    return {word: 0.0 for word in vocabulary}
+    else:
+        distance_score = {word: 0.0 for word in vocabulary}
+    return distance_score
 
 
 def find_correct_word(
