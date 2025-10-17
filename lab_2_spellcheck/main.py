@@ -287,7 +287,7 @@ def delete_letter(word: str) -> list[str]:
     if not isinstance(word, str) or not word:
         return []
     candidates = []
-    for i, el in enumerate(word):
+    for i in range(len(word)):
         new = word[:i] + word[i+1:]
         candidates.append(new)
     return sorted(candidates)
@@ -338,9 +338,9 @@ def replace_letter(word: str, alphabet: list[str]) -> list[str]:
     if not check_list(alphabet, str, True):
         return []
     candidates = []
-    for i, el in enumerate(word):
+    for i, char in enumerate(word):
         for letter in alphabet:
-            if letter != el:
+            if letter != char:
                 new = word[:i] + letter + word[i+1:]
                 candidates.append(new)
     return sorted(candidates)
