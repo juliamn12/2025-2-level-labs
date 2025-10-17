@@ -362,8 +362,8 @@ def swap_adjacent(word: str) -> list[str]:
     if not isinstance(word, str) or len(word) < 2:
         return []
     candidates = []
-    for i, el in enumerate(word[:-1]):
-        new = word[:i] + word[i+1] + el + word[i+2:]
+    for i, char in enumerate(word[:-1]):
+        new = word[:i] + word[i+1] + char + word[i+2:]
         candidates.append(new)
     return sorted(candidates)
 
