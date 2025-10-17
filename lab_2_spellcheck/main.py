@@ -4,7 +4,6 @@ Lab 2.
 
 # pylint:disable=unused-argument
 from typing import Literal
-
 from lab_1_keywords_tfidf.main import check_dict, check_list
 
 
@@ -120,26 +119,21 @@ def calculate_distance(
             if jaccard_distance is None:
                 return None
             distance_score[word] = jaccard_distance
-    elif method == "frequency-based":
+    if method == "frequency-based":
         if alphabet is None:
-            for word in vocabulary:
-                distance_score[word] = 1.0
-        else:
-            freq_distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
-            if freq_distance is None:
-                return None
-            for word in vocabulary:
-                distance_score[word] = freq_distance.get(word, 1.0)
-    elif method == "levenshtein":
+            return {word: 1.0 for word in vocabulary}
+        freq_distance = calculate_frequency_distance(first_token, vocabulary, alphabet)
+        if freq_distance is None:
+            return None
+        return {word: freq_distance.get(word, 1.0)for word in vocabulary}
+    if method == "levenshtein":
         for word in vocabulary:
             levenshtein_distance = calculate_levenshtein_distance(first_token, word)
             if levenshtein_distance is None:
                 return None
             distance_score[word] = float(levenshtein_distance)
-    else:
-        for word in vocabulary:
-            distance_score[word] = 0.0
-    return distance_score
+        return distance_score
+    return {word: 0.0 for word in vocabulary}
 
 
 def find_correct_word(

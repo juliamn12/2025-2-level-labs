@@ -50,14 +50,17 @@ def main() -> None:
         for word in out_of_vocab:
             use_jaccard = find_correct_word(word, vocab, "jaccard")
             use_frequency_based = find_correct_word(word, vocab, "frequency-based")
+            use_levenshtein = find_correct_word(word, vocab, "levenshtein")
             corrections.append({
                 "word": word, 
                 "jaccard": use_jaccard, 
-                "frequency-based": use_frequency_based
+                "frequency-based": use_frequency_based,
+                "levenshtein": use_levenshtein
             })
             print(f"Word: {word}")
             print(f"Jaccard: {use_jaccard}")
             print(f"Frequency-based: {use_frequency_based}")
+            print(f"Levenshtein: {use_levenshtein}")
     result = corrections
     assert result, "Result is None"
 
