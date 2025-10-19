@@ -171,18 +171,11 @@ def find_correct_word(
     if len(candidates) == 1:
         return candidates[0]
     length_wrong_word = len(wrong_word)
-    differences = []
-    min_difference = min(abs(len(word)-length_wrong_word)for word in candidates)
-    for word in candidates:
-        diff = abs(len(word) - length_wrong_word)
-        differences.append(diff)
-    min_difference = min(differences)
+    min_difference = min(abs(len(word)-length_wrong_word) for word in candidates)
     good_candidates = [
         word for word in candidates
         if abs(len(word)-length_wrong_word) == min_difference
     ]
-    if not good_candidates:
-        return None
     best_candidate = min(good_candidates)
     return best_candidate
 

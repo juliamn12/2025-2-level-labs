@@ -42,7 +42,10 @@ def main() -> None:
         return
     corrections = []
     for sentence in sentences:
-        words = clean_and_tokenize(sentence)
+        tokens_sentence = clean_and_tokenize(sentence)
+        if tokens_sentence is None:
+            continue 
+        words = remove_stop_words(tokens_sentence, stop_words)
         if words is None:
             continue
         out_of_vocab = find_out_of_vocab_words(words, vocab)
