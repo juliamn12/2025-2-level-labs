@@ -455,13 +455,11 @@ def calculate_frequency_distance(
     if not check_dict(frequencies, str, float, False):
         return None
     candidates = propose_candidates(word, alphabet)
-    distance_freq = {}
-    for dict_word in frequencies:
-        if candidates is not None and dict_word in candidates:
-            freq = frequencies.get(dict_word, 0.0)
-            distance_freq[dict_word] = 1.0 - freq
-        else:
-            distance_freq[dict_word] = 1.0
+    distance_freq = {
+        dict_word: (1.0 - frequencies.get(dict_word, 0.0))
+        if candidates is not None and dict_word in candidates else 1.0 
+        for dict_word in frequencies
+    }
     return distance_freq
 
 
