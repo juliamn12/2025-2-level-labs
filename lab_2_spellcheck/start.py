@@ -44,7 +44,7 @@ def main() -> None:
     for sentence in sentences:
         tokens_sentence = clean_and_tokenize(sentence)
         if tokens_sentence is None:
-            continue 
+            continue
         words = remove_stop_words(tokens_sentence, stop_words)
         if words is None:
             continue
