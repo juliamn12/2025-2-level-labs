@@ -131,7 +131,7 @@ def calculate_distance(
                 return None
             distance_score[word] = float(levenshtein_distance)
     else:
-        distance_score = {word: 0.0 for word in vocabulary}
+        return None
     return distance_score
 
 
@@ -414,11 +414,11 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
         return None
     if not check_list(alphabet, str, True):
         return None
+    if word == "" and not alphabet:
+        return ()
     first_step = generate_candidates(word, alphabet)
     if first_step is None:
         return None
-    if word == "" and not alphabet:
-        return ()
     second_step = []
     for candidate in first_step:
         candidates = generate_candidates(candidate, alphabet)
@@ -426,8 +426,6 @@ def propose_candidates(word: str, alphabet: list[str]) -> tuple[str, ...] | None
             return None
         second_step.extend(candidates)
     result_set = set(first_step+second_step)
-    if word == "":
-        result_set.add("")
     result = sorted(result_set)
     return tuple(result)
 
@@ -460,7 +458,7 @@ def calculate_frequency_distance(
     distance_freq = {}
     for dict_word in frequencies:
         if candidates is not None and dict_word in candidates:
-            freq = frequencies[dict_word]
+            freq = frequencies.get(dict_word, 0.0)
             distance_freq[dict_word] = 1.0 - freq
         else:
             distance_freq[dict_word] = 1.0

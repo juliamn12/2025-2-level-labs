@@ -30,6 +30,7 @@ def main() -> None:
         open("assets/incorrect_sentence_5.txt", "r", encoding="utf-8") as f5,
     ):
         sentences = [f.read() for f in (f1, f2, f3, f4, f5)]
+    ru_alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
     tokens = clean_and_tokenize(text)
     if tokens is None:
         return
@@ -48,9 +49,9 @@ def main() -> None:
         if out_of_vocab is None:
             continue
         for word in out_of_vocab:
-            use_jaccard = find_correct_word(word, vocab, "jaccard")
-            use_frequency_based = find_correct_word(word, vocab, "frequency-based")
-            use_levenshtein = find_correct_word(word, vocab, "levenshtein")
+            use_jaccard = find_correct_word(word, vocab, "jaccard", ru_alphabet)
+            use_frequency_based = find_correct_word(word, vocab, "frequency-based", ru_alphabet)
+            use_levenshtein = find_correct_word(word, vocab, "levenshtein", ru_alphabet)
             corrections.append({
                 "word": word, 
                 "jaccard": use_jaccard, 
@@ -58,9 +59,9 @@ def main() -> None:
                 "levenshtein": use_levenshtein
             })
             print(f"Word: {word}")
-            print(f"Jaccard: {use_jaccard}")
-            print(f"Frequency-based: {use_frequency_based}")
-            print(f"Levenshtein: {use_levenshtein}")
+            print(f"  Jaccard: {use_jaccard}")
+            print(f"  Frequency-based: {use_frequency_based}")
+            print(f"  Levenshtein: {use_levenshtein}")
     result = corrections
     assert result, "Result is None"
 
