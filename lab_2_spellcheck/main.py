@@ -26,9 +26,6 @@ def build_vocabulary(tokens: list[str]) -> dict[str, float] | None:
     total_tokens = 0
     for token in tokens:
         total_tokens += 1
-    count_frequencies = {}
-    for token in tokens:
-        count_frequencies[token] = count_frequencies.get(token, 0) + 1
     relative_frequencies = {}
     for token in tokens:
         relative_frequencies[token] = relative_frequencies.get(token, 0) + 1 / total_tokens
@@ -204,7 +201,7 @@ def initialize_levenshtein_matrix(
         if i == 0:
             line = list(range(candidate_length + 1))
         else:
-            line = [i] + [0] * (candidate_length)
+            line = [i] + [0] * candidate_length
         lev_matrix.append(line)
     return lev_matrix
 
