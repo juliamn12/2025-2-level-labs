@@ -151,7 +151,7 @@ class TextProcessor:
         an element is not added to storage
         """
         if not isinstance (element, str) or len(element) != 1 or element in self._storage:
-            return None
+            return
         self._storage[element] = len(self._storage)
 
     def decode(self, encoded_corpus: tuple[int, ...]) -> str | None:
@@ -336,8 +336,8 @@ class NGramLanguageModel:
                 next_token = n_gram[-1]
                 same_context_n_grams[next_token] = freq
         sorted_candidates = dict(sorted(
-            same_context_n_grams.items(), 
-            key = lambda item: (item[1], item[0]), 
+            same_context_n_grams.items(),
+            key = lambda item: (item[1], item[0]),
             reverse=True
         ))
         return sorted_candidates
@@ -493,8 +493,9 @@ class BeamSearcher:
         """
         if (not isinstance(sequence, tuple) or
             not isinstance(next_tokens, list) or
-            not isinstance(sequence_candidates, dict) or
-            sequence not in sequence_candidates or
+            not isinstance(sequence_candidates, dict)):
+            return None
+        if (sequence not in sequence_candidates or
             len(next_tokens) > self._beam_width or
             not next_tokens): 
             return None
@@ -592,15 +593,17 @@ class BeamSearchTextGenerator:
                 if not next_tokens:
                     new_candidates[seq] = current_prob
                     continue
-                updated = self.beam_searcher.continue_sequence(seq, next_tokens, {seq: current_prob})
+                updated = self.beam_searcher.continue_sequence(
+                    seq, next_tokens, {seq: current_prob}
+                )
                 if updated is None:
                     continue
                 continuation_exists = True
                 new_candidates.update(updated)
-            if continuation_exists == False:
+            if not continuation_exists:
                 break
             seq_candidates_dict = self.beam_searcher.prune_sequence_candidates(new_candidates)
-            if seq_candidates_dict is None:
+            if not seq_candidates_dict:
                 return None
         if not seq_candidates_dict:
             return None
