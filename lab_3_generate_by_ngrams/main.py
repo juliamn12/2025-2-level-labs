@@ -48,33 +48,22 @@ class TextProcessor:
         if not isinstance(text, str) or not text:
             return None
         text = text.lower()
-        cleaned_text = ""
+        tokens = []
+        previous_end_of_word_token = False
         for char in text:
             if char.isalpha():
-                cleaned_text += char
-            elif char.isspace():
-                cleaned_text += " "
-        words = cleaned_text.split()
-        if not words:
-            return None
-        tokens = []
-        for i, word in enumerate(words):
-            tokens.extend(list(word))
-            if i < len(words) - 1:
-                tokens.append(self._end_of_word_token)
-            elif text[-1].isspace() or not text[-1].isalpha():
-                tokens.append(self._end_of_word_token)
-        final_tokens = []
-        previous_end_of_word_token = False
-        for token in tokens:
-            if token == self._end_of_word_token:
-                if not previous_end_of_word_token:
-                    final_tokens.append(token)
-                    previous_end_of_word_token = True
-            else:
-                final_tokens.append(token)
+                tokens.append(char)
                 previous_end_of_word_token = False
-        return tuple(final_tokens)
+            elif char.isspace():
+                if not previous_end_of_word_token:
+                    tokens.append(self._end_of_word_token)
+                    previous_end_of_word_token = True
+        if tokens and (text[-1].isspace() or not text[-1].isalpha()):
+            if not previous_end_of_word_token:
+                tokens.append(self._end_of_word_token)
+        if not tokens:
+            return None
+        return tuple(tokens)
 
     def get_id(self, element: str) -> int | None:
         """
@@ -161,11 +150,7 @@ class TextProcessor:
         In case of corrupt input arguments or invalid argument length,
         an element is not added to storage
         """
-        if not isinstance (element, str):
-            return None
-        if len(element) != 1:
-            return None
-        if element in self._storage:
+        if not isinstance (element, str) or len(element) != 1 or element in self._storage:
             return None
         self._storage[element] = len(self._storage)
 
@@ -316,10 +301,9 @@ class NGramLanguageModel:
         if n_grams is None:
             return 1
         n_gram_abs_freq = {}
-        for n_gram in n_grams:
-            n_gram_abs_freq[n_gram] = n_gram_abs_freq.get(n_gram, 0) + 1
         same_beginning_freq = {}
         for n_gram in n_grams:
+            n_gram_abs_freq[n_gram] = n_gram_abs_freq.get(n_gram, 0) + 1
             beginning = n_gram[:-1]
             same_beginning_freq[beginning] = same_beginning_freq.get(beginning, 0) + 1
         for n_gram, abs_freq in n_gram_abs_freq.items():
@@ -507,17 +491,12 @@ class BeamSearcher:
 
         In case of corrupt input arguments or unexpected behaviour of methods used return None.
         """
-        if not isinstance(sequence, tuple):
-            return None
-        if not isinstance(next_tokens, list):
-            return None
-        if not isinstance(sequence_candidates, dict):
-            return None
-        if sequence not in sequence_candidates:
-            return None
-        if len(next_tokens) > self._beam_width:
-            return None
-        if not next_tokens:
+        if (not isinstance(sequence, tuple) or
+            not isinstance(next_tokens, list) or
+            not isinstance(sequence_candidates, dict) or
+            sequence not in sequence_candidates or
+            len(next_tokens) > self._beam_width or
+            not next_tokens): 
             return None
         probability = sequence_candidates[sequence]
         del sequence_candidates[sequence]
@@ -577,7 +556,7 @@ class BeamSearchTextGenerator:
         self._text_processor = text_processor
         self._beam_width = beam_width
         self._language_model = language_model
-        self.beam_searcher = BeamSearcher(beam_width, language_model)
+        self.beam_searcher = BeamSearcher(self._beam_width, language_model)
 
     def run(self, prompt: str, seq_len: int) -> str | None:
         """
