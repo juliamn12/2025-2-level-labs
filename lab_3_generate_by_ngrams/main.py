@@ -497,7 +497,7 @@ class BeamSearcher:
             return None
         if (sequence not in sequence_candidates or
             len(next_tokens) > self._beam_width or
-            not next_tokens): 
+            not next_tokens):
             return None
         probability = sequence_candidates[sequence]
         del sequence_candidates[sequence]
@@ -578,10 +578,10 @@ class BeamSearchTextGenerator:
         if not isinstance(seq_len, int) or seq_len <= 0:
             return None
         encoded_prompt = self._text_processor.encode(prompt)
-        if not encoded_prompt or encoded_prompt is None:
+        if not encoded_prompt:
             return None
         seq_candidates_dict = {encoded_prompt: 0.0}
-        for _ in range (seq_len):
+        for _ in range(seq_len):
             new_candidates = {}
             sequences = list(seq_candidates_dict.keys())
             continuation_exists = False
@@ -602,9 +602,10 @@ class BeamSearchTextGenerator:
                 new_candidates.update(updated)
             if not continuation_exists:
                 break
-            seq_candidates_dict = self.beam_searcher.prune_sequence_candidates(new_candidates)
-            if not seq_candidates_dict:
+            pruned = self.beam_searcher.prune_sequence_candidates(new_candidates)
+            if pruned is None:
                 return None
+            seq_candidates_dict = pruned
         if not seq_candidates_dict:
             return None
         best = min(seq_candidates_dict.items(), key=lambda x: x[1])[0]
