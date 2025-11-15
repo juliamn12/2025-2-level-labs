@@ -3,7 +3,7 @@ Generation by NGrams starter
 """
 
 # pylint:disable=unused-import, unused-variable
-from lab_3_generate_by_ngrams.main import(
+from lab_3_generate_by_ngrams.main import (
     BeamSearchTextGenerator,
     GreedyTextGenerator,
     NGramLanguageModel,
@@ -21,6 +21,8 @@ def main() -> None:
         text = text_file.read()
     text_processor = TextProcessor("_")
     encoded_text = text_processor.encode(text)
+    if encoded_text is None:
+        return
     decoded_text = text_processor.decode(encoded_text)
     print(decoded_text)
     n_gram_size = 7
