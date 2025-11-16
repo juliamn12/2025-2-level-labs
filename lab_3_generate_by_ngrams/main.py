@@ -61,7 +61,9 @@ class TextProcessor:
         if tokens and (text[-1].isspace() or not text[-1].isalpha()):
             if not previous_end_of_word_token:
                 tokens.append(self._end_of_word_token)
-        return tuple(tokens) if tokens else None
+        if not tokens:
+            return None
+        return tuple(tokens)
 
     def get_id(self, element: str) -> int | None:
         """
