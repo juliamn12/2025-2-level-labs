@@ -491,13 +491,17 @@ class BeamSearcher:
 
         In case of corrupt input arguments or unexpected behaviour of methods used return None.
         """
-        if (not isinstance(sequence, tuple) or
+        if (
+            not isinstance(sequence, tuple) or
             not isinstance(next_tokens, list) or
-            not isinstance(sequence_candidates, dict)):
+            not isinstance(sequence_candidates, dict)
+        ):
             return None
-        if (sequence not in sequence_candidates or
+        if (
+            sequence not in sequence_candidates or
             len(next_tokens) > self._beam_width or
-            not next_tokens):
+            not next_tokens
+        ):
             return None
         probability = sequence_candidates[sequence]
         del sequence_candidates[sequence]
