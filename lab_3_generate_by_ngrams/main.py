@@ -127,7 +127,7 @@ class TextProcessor:
         if not isinstance(text, str) or not text:
             return None
         tokens = self._tokenize(text)
-        if not tokens:
+        if tokens is None:
             return None
         encoded = []
         for token in tokens:
