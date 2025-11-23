@@ -10,6 +10,20 @@ from lab_3_generate_by_ngrams.main import BackOffGenerator, NGramLanguageModel, 
 NGramType = tuple[int, ...]
 "Type alias for NGram."
 
+class TriePrefixNotFoundError(Exception):
+    """Ecxeption raised when required prefix is not found in the trie"""
+
+class EncodingError(Exception):
+    """Exception raised when text encoding fails due to incorrect input or processing error"""
+
+class DecodingError(Exception):
+    """Exception raised when text decoding fails due to incorrect input or processing error"""
+
+class IncorrectNgramError(Exception):
+    """Exception raised when trying to use an unsuitable n-gram size"""
+
+class MergeTreesError(Exception):
+    """Exception raised when it is impossible to merge the trees"""
 
 class WordProcessor(TextProcessor):
     """
@@ -28,6 +42,8 @@ class WordProcessor(TextProcessor):
         Args:
             end_of_sentence_token (str): A token denoting sentence boundary
         """
+        super().__init__(end_of_sentence_token)
+        self._end_of_sentence_token = end_of_sentence_token
 
     def encode_sentences(self, text: str) -> tuple:
         """
@@ -82,6 +98,9 @@ class WordProcessor(TextProcessor):
         Returns:
             tuple[str, ...]: Tokenized text as words
         """
+        if not isinstance(text, str) or not text:
+            raise EncodingError
+        tokens 
 
 
 class TrieNode:
