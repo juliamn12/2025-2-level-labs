@@ -353,6 +353,7 @@ class PrefixTrie:
             else:
                 for child in node.get_children():
                     stack.append((child, path + (child.get_name(),)))
+        result.sort()
         return tuple(result)
 
     def _insert(self, sequence: NGramType) -> None:
