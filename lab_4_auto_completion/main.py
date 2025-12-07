@@ -42,7 +42,7 @@ class WordProcessor(TextProcessor):
         Args:
             end_of_sentence_token (str): A token denoting sentence boundary
         """
-        super().__init__(end_of_sentence_token)
+        super().__init__(end_of_word_token=end_of_sentence_token)
         self._end_of_sentence_token = end_of_sentence_token
 
     def encode_sentences(self, text: str) -> tuple:
@@ -147,6 +147,8 @@ class WordProcessor(TextProcessor):
         if not isinstance(text, str) or not text:
             raise EncodingError("Invalid input: text must be a non-empty string")
         tokens = []
+        if '.' not in text and '!' not in text and '?' not in text:
+            text = text.rstrip('.!?') + '.'
         end_of_sentence = ".?!"
         sentences = []
         current_sentence = ""
@@ -156,7 +158,11 @@ class WordProcessor(TextProcessor):
                 current_sentence = ""
             else:
                 current_sentence += char
-        for sentence in sentences:
+        if current_sentence.strip():
+            sentences.append(current_sentence.strip())
+        if not sentences:
+            sentences = [text.strip()]
+        for i, sentence in enumerate(sentences):
             words = sentence.lower().split()
             cleaned = []
             for word in words:
@@ -505,10 +511,11 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         Args:
             new_corpus (tuple[NGramType]): Additional corpus represented as token sequences.
         """
-        if not self._encoded_corpus:
-            self._encoded_corpus = new_corpus
-        else:
-            self._encoded_corpus = self._encoded_corpus + new_corpus
+        self._encoded_corpus = (
+            self._encoded_corpus + new_corpus 
+            if self._encoded_corpus 
+            else new_corpus
+        )
         self.build()
 
     def _collect_all_ngrams(self) -> tuple[NGramType, ...]:
@@ -549,12 +556,10 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
         """
         collected_frequencies = {}
         children = node.get_children()
-        for i in range(len(children)):
-            child = children[i]
+        for child in children:
             child_name = child.get_name()
             if child_name is not None:
-                value = child.get_value()
-                collected_frequencies[child_name] = value
+                collected_frequencies[child_name] = child.get_value()
         return collected_frequencies
 
     def _fill_frequencies(self, encoded_corpus: tuple[NGramType, ...]) -> None:

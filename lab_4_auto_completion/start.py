@@ -2,9 +2,16 @@
 Auto-completion start
 """
 
+from lab_3_generate_by_ngrams.main import (
+    BeamSearcher,
+    BeamSearchTextGenerator,
+    GreedyTextGenerator,
+    TextProcessor,
+)
+
 # pylint:disable=unused-variable
-from lab_4_auto_completion.main import WordProcessor, PrefixTrie
-from lab_3_generate_by_ngrams.main import BeamSearcher, BeamSearchTextGenerator, TextProcessor, NGramLanguageModel
+from lab_4_auto_completion.main import NGramTrieLanguageModel, PrefixTrie, WordProcessor
+
 
 def main() -> None:
     """
@@ -17,9 +24,10 @@ def main() -> None:
     with open("./assets/ussr_letters.txt", "r", encoding="utf-8") as text_file:
         ussr_letters = text_file.read()
     word_processor = WordProcessor(end_of_sentence_token="<EOS>")
-    encoded = word_processor.encode_sentences(hp_letters)
+    encoded_hp = word_processor.encode_sentences(hp_letters)
+    
     prefix_trie = PrefixTrie()
-    prefix_trie.fill(encoded)
+    prefix_trie.fill(encoded_hp)
     suggestions = prefix_trie.suggest((2,))
     if suggestions:
         first_sug = suggestions[0]
@@ -31,6 +39,21 @@ def main() -> None:
                    break
         decoded_text = word_processor._postprocess_decoded_text(tuple(decoded))
         print(decoded_text)
+
+    n_gram_size = 5
+    ngram_model = NGramTrieLanguageModel(encoded_hp, n_gram_size)
+    ngram_model.build()
+    greedy_generator = GreedyTextGenerator(ngram_model, word_processor)
+    beam_generator = BeamSearchTextGenerator(ngram_model, word_processor, beam_width=3)
+    prompt = "Dear"
+    greedy_before_result = greedy_generator.run(seq_len=30, prompt=prompt)
+    beam_before_result = beam_generator.run(prompt=prompt, seq_len=30)
+    ussr_encoded = word_processor.encode_sentences(ussr_letters)
+    ngram_model.update(ussr_encoded)
+    greedy_after_result = greedy_generator.run(seq_len=30, prompt=prompt)
+    beam_after_result = beam_generator.run(prompt=prompt, seq_len=30)
+    print(f"Before update: Greedy = {greedy_before_result}, Beam = {beam_before_result}")
+    print(f"After update: Greedy = {greedy_after_result}, Beam = {beam_after_result}")
     result = decoded_text
     assert result, "Result is None"
 
