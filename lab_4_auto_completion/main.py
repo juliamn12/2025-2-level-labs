@@ -162,7 +162,7 @@ class WordProcessor(TextProcessor):
             sentences.append(current_sentence.strip())
         if not sentences:
             sentences = [text.strip()]
-        for i, sentence in enumerate(sentences):
+        for _, sentence in enumerate(sentences):
             words = sentence.lower().split()
             cleaned = []
             for word in words:
@@ -208,7 +208,7 @@ class TrieNode:
         Returns:
             bool: True if node has at least one child, False otherwise.
         """
-        return True if self._children else False
+        return bool(self._children)
 
     def __str__(self) -> str:
         """
@@ -241,13 +241,12 @@ class TrieNode:
         """
         if item is None:
             return tuple(self._children)
-        else:
-            child_nodes = []
-            for child in self._children:
-                child_name = child.get_name()
-                if child_name == item:
-                    child_nodes.append(child)
-            return tuple(child_nodes)
+        child_nodes = []
+        for child in self._children:
+            child_name = child.get_name()
+            if child_name == item:
+                child_nodes.append(child)
+        return tuple(child_nodes)
 
     def get_name(self) -> int | None:
         """
@@ -358,7 +357,9 @@ class PrefixTrie:
                 result.append(path)
             else:
                 for child in node.get_children():
-                    stack.append((child, path + (child.get_name(),)))
+                    child_name = child.get_name()
+                    if child_name is not None:
+                        stack.append((child, path + (child_name,)))
         result.sort()
         return tuple(result)
 
@@ -512,8 +513,8 @@ class NGramTrieLanguageModel(PrefixTrie, NGramLanguageModel):
             new_corpus (tuple[NGramType]): Additional corpus represented as token sequences.
         """
         self._encoded_corpus = (
-            self._encoded_corpus + new_corpus 
-            if self._encoded_corpus 
+            self._encoded_corpus + new_corpus
+            if self._encoded_corpus
             else new_corpus
         )
         self.build()

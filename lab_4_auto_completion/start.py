@@ -33,8 +33,8 @@ def main() -> None:
         first_sug = suggestions[0]
         decoded = []
         for word_id in first_sug:
-            for word, id in word_processor._storage.items():
-               if id == word_id:
+            for word, word_id_value in word_processor._storage.items():
+                if id == word_id_value:
                    decoded.append(word)
                    break
         decoded_text = word_processor._postprocess_decoded_text(tuple(decoded))
