@@ -3,10 +3,8 @@ Auto-completion start
 """
 
 from lab_3_generate_by_ngrams.main import (
-    BeamSearcher,
     BeamSearchTextGenerator,
     GreedyTextGenerator,
-    TextProcessor,
 )
 
 # pylint:disable=unused-variable
@@ -25,20 +23,13 @@ def main() -> None:
         ussr_letters = text_file.read()
     word_processor = WordProcessor(end_of_sentence_token="<EOS>")
     encoded_hp = word_processor.encode_sentences(hp_letters)
-    
     prefix_trie = PrefixTrie()
     prefix_trie.fill(encoded_hp)
     suggestions = prefix_trie.suggest((2,))
     if suggestions:
-        first_sug = suggestions[0]
-        decoded = []
-        for word_id in first_sug:
-            for word, word_id_value in word_processor._storage.items():
-                if id == word_id_value:
-                   decoded.append(word)
-                   break
-        decoded_text = word_processor._postprocess_decoded_text(tuple(decoded))
-        print(decoded_text)
+        first_suggestion = suggestions[0]
+        decoded = word_processor.decode(first_suggestion)
+        print(f"Prefix Trie suggestion: {decoded.replace('<EOS>', ' ').strip()}")
 
     n_gram_size = 5
     ngram_model = NGramTrieLanguageModel(encoded_hp, n_gram_size)
@@ -54,7 +45,7 @@ def main() -> None:
     beam_after_result = beam_generator.run(prompt=prompt, seq_len=30)
     print(f"Before update: Greedy = {greedy_before_result}, Beam = {beam_before_result}")
     print(f"After update: Greedy = {greedy_after_result}, Beam = {beam_after_result}")
-    result = decoded_text
+    result = decoded
     assert result, "Result is None"
 
 
