@@ -27,25 +27,28 @@ def main() -> None:
     prefix_trie.fill(encoded_hp)
     suggestions = prefix_trie.suggest((2,))
     if suggestions:
-        first_suggestion = suggestions[0]
-        decoded = word_processor.decode(first_suggestion)
-        print(f"Prefix Trie suggestion: {decoded.replace('<EOS>', ' ').strip()}")
-
-    n_gram_size = 5
-    ngram_model = NGramTrieLanguageModel(encoded_hp, n_gram_size)
+        first_sug = suggestions[0]
+        decoded = []
+        for word_id in first_sug:
+            for word, word_id_value in word_processor._storage.items():
+                if word_id == word_id_value:
+                    decoded.append(word)
+                    break
+        decoded_text = word_processor._postprocess_decoded_text(tuple(decoded))
+        print(decoded_text)
+    ngram_model = NGramTrieLanguageModel(encoded_hp, 5)
     ngram_model.build()
     greedy_generator = GreedyTextGenerator(ngram_model, word_processor)
     beam_generator = BeamSearchTextGenerator(ngram_model, word_processor, beam_width=3)
-    prompt = "Dear"
-    greedy_before_result = greedy_generator.run(seq_len=30, prompt=prompt)
-    beam_before_result = beam_generator.run(prompt=prompt, seq_len=30)
+    before = (greedy_generator.run(seq_len=30, prompt="Dear"), 
+              beam_generator.run(prompt="Dear", seq_len=30))
     ussr_encoded = word_processor.encode_sentences(ussr_letters)
     ngram_model.update(ussr_encoded)
-    greedy_after_result = greedy_generator.run(seq_len=30, prompt=prompt)
-    beam_after_result = beam_generator.run(prompt=prompt, seq_len=30)
-    print(f"Before update: Greedy = {greedy_before_result}, Beam = {beam_before_result}")
-    print(f"After update: Greedy = {greedy_after_result}, Beam = {beam_after_result}")
-    result = decoded
+    after = (greedy_generator.run(seq_len=30, prompt="Dear"),
+             beam_generator.run(prompt="Dear", seq_len=30))
+    print(f"Before update: Greedy = {before[0]}, Beam = {before[1]}")
+    print(f"After update: Greedy = {after[0]}, Beam = {after[1]}")
+    result = decoded_text
     assert result, "Result is None"
 
 
